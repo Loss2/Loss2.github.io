@@ -7,7 +7,19 @@
     <title>Урок 5. Тестирование браузерных пушей</title>
 </head>
 <body>
+<button id="init_sub">Подписаться на уведомления</button> // Кнопка подписки
 
+<script>
+	document.getElementById('init_sub').addEventListener('click', function() { // По клику на кнопку..
+	try {
+		var akPush = new AKPush();
+		akPush.initSubscription() // Покажет форму для подписки
+		}
+	catch (e) {
+		console.log(e); // В случае ошибки выведет сообщение в консоль
+		}
+	});
+</script>
     <!-- Разместите скрипт для пуш-уведомлений здесь -->
 
     <p>Урок 5. Тестирование браузерных пушей</p>
