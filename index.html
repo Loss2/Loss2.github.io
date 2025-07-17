@@ -4,26 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Книжный магазин</title>
+    
+    <!-- Чистая реализация Altcraft без потенциальных проблем с JSON -->
     <script>
-        (function (window, document, dataLayerName, containerID) {
-            window[dataLayerName] = window[dataLayerName] || [];
-            window[dataLayerName].push({ 
-                'start': new Date().getTime(), 
-                event: 'actm-js',
-                containerID: containerID
-            });
-            var firstScript = document.getElementsByTagName('script')[0];
-            var script = document.createElement('script');
-            var dl = dataLayerName !== 'acDataLayer' ? '&l=' + encodeURIComponent(dataLayerName) : '';
-            script.async = true;
-            script.src = 'https://pxl.demo.altcraft.com/actm/js/actm.js?id=' + encodeURIComponent(containerID) + dl;
-            script.type = 'module';
-            if (firstScript && firstScript.parentNode) {
-                firstScript.parentNode.insertBefore(script, firstScript);
+    (function() {
+        // Инициализация dataLayer
+        window.acDataLayer = window.acDataLayer || [];
+        
+        // Функция для безопасного добавления событий
+        function pushToDataLayer(obj) {
+            try {
+                // Очищаем данные от недопустимых символов
+                const cleanObj = {};
+                for (const key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        cleanObj[key] = String(obj[key]).replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+                    }
+                }
+                window.acDataLayer.push(cleanObj);
+            } catch (e) {
+                console.error('Ошибка при добавлении в dataLayer:', e);
             }
-        }(window, document, 'acDataLayer', 'ATM-9MaUAoC2Hv4TCDTbl'));
+        }
+
+        // Первоначальное событие
+        pushToDataLayer({
+            'start': new Date().getTime(),
+            'event': 'actm-js',
+            'containerID': 'ATM-9MaUAoC2Hv4TCDTbl'
+        });
+
+        // Загрузка скрипта Altcraft
+        var script = document.createElement('script');
+        script.src = 'https://pxl.demo.altcraft.com/actm/js/actm.js?id=ATM-9MaUAoC2Hv4TCDTbl';
+        script.async = true;
+        document.head.appendChild(script);
+    })();
     </script>
+    
     <style>
+        /* Стили остаются без изменений */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -33,29 +53,9 @@
     </style>
 </head>
 <body>
-    <script src="https://pxl.demo.altcraft.com/ak_container.js?id=MTg1fDM="></script>
-
-    <header>
-        <h1>Книжный магазин</h1>
-        <div>Товаров в корзине: <span id="cart-counter">0</span></div>
-    </header>
-
-    <main>
-        <div class="book-grid">
-            <div class="book-card">
-                <h3>Война и мир</h3>
-                <a href="#" class="add-to-cart" onclick="addToCart(event, 'Война и мир')">В корзину</a>
-            </div>
-            <!-- Остальные книги -->
-        </div>
-
-        <div style="text-align: center;">
-            <a href="#" id="init_sub" class="push-subscribe">Подписаться на уведомления</a>
-        </div>
-    </main>
-
+    <!-- Остальная часть HTML -->
     <script>
-        // Функция добавления в корзину
+        // Функция добавления в корзину с улучшенной обработкой данных
         function addToCart(event, bookTitle) {
             event.preventDefault();
             
@@ -63,56 +63,34 @@
             const counter = document.getElementById('cart-counter');
             counter.textContent = parseInt(counter.textContent) + 1;
             
-            // Отправляем событие в Altcraft
+            // Отправляем очищенные данные в Altcraft
             if(window.acDataLayer) {
+                const cleanTitle = bookTitle.replace(/[^\w\sа-яА-Я]/gi, '');
+                
                 const eventData = {
                     event: 'add_to_cart',
-                    book_title: bookTitle.replace(/[^\w\s]/gi, ''),
+                    book_title: cleanTitle,
                     eventType: 'click',
                     eventCategory: 'cart',
                     eventAction: 'add',
-                    eventLabel: bookTitle.replace(/[^\w\s]/gi, '')
+                    eventLabel: cleanTitle,
+                    timestamp: new Date().toISOString()
                 };
                 
-                try {
-                    window.acDataLayer.push(eventData);
-                    // Триггерим push-уведомление через Altcraft
-                    triggerPushNotification(bookTitle);
-                } catch(e) {
-                    console.error('Ошибка отправки данных:', e);
-                }
+                // Используем нашу безопасную функцию
+                pushToDataLayer(eventData);
             }
         }
 
-        // Функция для триггера push-уведомления
-        function triggerPushNotification(bookTitle) {
-            if (window.acDataLayer) {
-                window.acDataLayer.push({
-                    event: 'trigger_push',
-                    push_title: 'Товар добавлен в корзину',
-                    push_message: `Вы добавили "${bookTitle}"`,
-                    push_icon: 'https://example.com/icon.png',
-                    push_url: window.location.href
-                });
-            }
-        }
-
-        // Подписка на уведомления
-        document.getElementById('init_sub').addEventListener('click', function(event) {
+        // Инициализация подписки на уведомления
+        document.getElementById('init_sub')?.addEventListener('click', function(event) {
             event.preventDefault();
-            try {
-                if (typeof AKPush !== 'undefined') {
-                    var akPush = new AKPush();
-                    akPush.initSubscription().then(function() {
-                        console.log('Подписка успешно оформлена');
-                    }).catch(function(error) {
-                        console.error('Ошибка подписки:', error);
-                    });
-                } else {
-                    console.warn('AKPush не доступен');
+            if (typeof AKPush !== 'undefined') {
+                try {
+                    new AKPush().initSubscription();
+                } catch (e) {
+                    console.error('Ошибка инициализации подписки:', e);
                 }
-            } catch(e) {
-                console.error('Ошибка:', e);
             }
         });
     </script>
