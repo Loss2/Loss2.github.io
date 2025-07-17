@@ -4,11 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Урок 5. Тестирование браузерных пушей</title>
+</head>
+	<script>
+    (function (window, document, dataLayerName, containerID) {
+        window[dataLayerName] = window[dataLayerName] || [];
+        window[dataLayerName].push({ 'start': new Date().getTime(), event: 'actm-js' });
+        var firstScript = document.getElementsByTagName('script')[0];
+        var script = document.createElement('script');
+        var dl = dataLayerName !== 'acDataLayer' ? '&l=' + dataLayerName : '';
+        script.async = true;
+        script.src = 'https://pxl.demo.altcraft.com/actm/js/actm.js?id=' + containerID + dl;
+        script.type = 'module';
+        if (firstScript && firstScript.parentNode) {
+            firstScript.parentNode.insertBefore(script, firstScript);
+        }
+    }(window, document, 'acDataLayer', 'ATM-9RyRukqravy7Jjtz_'));
+</script>
+<body>
+<script src="https://pxl.demo.altcraft.com/ak_container.js?id=MTg1fDM=" ></script>
+<button id="init_sub">Подписаться на уведомления</button> 
+
+<script>
+	document.getElementById('init_sub').addEventListener('click', function() { // По клику на кнопку..
+	try {
+		var akPush = new AKPush();
+		akPush.initSubscription() // Покажет форму для подписки
+		}
+	catch (e) {
+		console.log(e); // В случае ошибки выведет сообщение в консоль
+		}
+	});
+</script>
+    <!-- Разместите скрипт для пуш-уведомлений здесь -->
+
+    <p>Урок 5. Тестирование браузерных пушей</p>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Онлайн Книжный Магазин</title>
     <style>
         /* Базовые стили */
