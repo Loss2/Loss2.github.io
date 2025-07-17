@@ -5,36 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Книжный магазин</title>
     
-    <!-- Чистая реализация Altcraft без потенциальных проблем с JSON -->
+    <!-- Исправленная реализация Altcraft -->
     <script>
     (function() {
-        // Инициализация dataLayer
         window.acDataLayer = window.acDataLayer || [];
-        
-        // Функция для безопасного добавления событий
-        function pushToDataLayer(obj) {
-            try {
-                // Очищаем данные от недопустимых символов
-                const cleanObj = {};
-                for (const key in obj) {
-                    if (obj.hasOwnProperty(key)) {
-                        cleanObj[key] = String(obj[key]).replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
-                    }
-                }
-                window.acDataLayer.push(cleanObj);
-            } catch (e) {
-                console.error('Ошибка при добавлении в dataLayer:', e);
-            }
-        }
-
-        // Первоначальное событие
-        pushToDataLayer({
+        window.acDataLayer.push({
             'start': new Date().getTime(),
-            'event': 'actm-js',
-            'containerID': 'ATM-9MaUAoC2Hv4TCDTbl'
+            'event': 'actm-js-init'
         });
 
-        // Загрузка скрипта Altcraft
+        // Загрузка скрипта без type="module"
         var script = document.createElement('script');
         script.src = 'https://pxl.demo.altcraft.com/actm/js/actm.js?id=ATM-9MaUAoC2Hv4TCDTbl';
         script.async = true;
@@ -43,53 +23,71 @@
     </script>
     
     <style>
-        /* Стили остаются без изменений */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+        /* Ваши стили */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .add-to-cart {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
         }
-        /* ... остальные стили ... */
     </style>
 </head>
 <body>
-    <!-- Остальная часть HTML -->
+    <header>
+        <h1>Книжный магазин</h1>
+        <div>Товаров в корзине: <span id="cart-counter">0</span></div>
+    </header>
+
+    <main>
+        <div class="book-card">
+            <h3>Война и мир</h3>
+            <a href="#" class="add-to-cart" onclick="addToCart(event, 'Война и мир')">В корзину</a>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="#" id="init_sub" class="add-to-cart">Подписаться на уведомления</a>
+        </div>
+    </main>
+
     <script>
-        // Функция добавления в корзину с улучшенной обработкой данных
-        function addToCart(event, bookTitle) {
-            event.preventDefault();
-            
-            // Обновляем счетчик
-            const counter = document.getElementById('cart-counter');
-            counter.textContent = parseInt(counter.textContent) + 1;
-            
-            // Отправляем очищенные данные в Altcraft
-            if(window.acDataLayer) {
-                const cleanTitle = bookTitle.replace(/[^\w\sа-яА-Я]/gi, '');
-                
-                const eventData = {
-                    event: 'add_to_cart',
-                    book_title: cleanTitle,
-                    eventType: 'click',
-                    eventCategory: 'cart',
-                    eventAction: 'add',
-                    eventLabel: cleanTitle,
-                    timestamp: new Date().toISOString()
-                };
-                
-                // Используем нашу безопасную функцию
-                pushToDataLayer(eventData);
+        // Функция для безопасной отправки данных
+        function pushToLayer(data) {
+            try {
+                // Очистка данных от спецсимволов
+                const cleanData = {};
+                for (const key in data) {
+                    cleanData[key] = String(data[key]).replace(/[^\w\sа-яА-Я.,!?-]/g, '');
+                }
+                window.acDataLayer.push(cleanData);
+            } catch(e) {
+                console.error('Ошибка отправки:', e);
             }
         }
 
-        // Инициализация подписки на уведомления
-        document.getElementById('init_sub')?.addEventListener('click', function(event) {
+        // Добавление в корзину
+        function addToCart(event, title) {
             event.preventDefault();
-            if (typeof AKPush !== 'undefined') {
+            document.getElementById('cart-counter').textContent = 
+                parseInt(document.getElementById('cart-counter').textContent) + 1;
+            
+            pushToLayer({
+                event: 'add_to_cart',
+                product: title,
+                time: new Date().toISOString()
+            });
+        }
+
+        // Инициализация подписки
+        document.getElementById('init_sub').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (window.AKPush) {
                 try {
                     new AKPush().initSubscription();
-                } catch (e) {
-                    console.error('Ошибка инициализации подписки:', e);
+                } catch(err) {
+                    console.error('Ошибка подписки:', err);
                 }
             }
         });
