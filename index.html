@@ -1,96 +1,15 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Книжный магазин</title>
-    
-    <!-- Исправленная реализация Altcraft -->
-    <script>
-    (function() {
-        window.acDataLayer = window.acDataLayer || [];
-        window.acDataLayer.push({
-            'start': new Date().getTime(),
-            'event': 'actm-js-init'
-        });
-
-        // Загрузка скрипта без type="module"
-        var script = document.createElement('script');
-        script.src = 'https://pxl.demo.altcraft.com/actm/js/actm.js?id=ATM-9MaUAoC2Hv4TCDTbl';
-        script.async = true;
-        document.head.appendChild(script);
-    })();
-    </script>
-    
-    <style>
-        /* Ваши стили */
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .add-to-cart {
-            display: inline-block;
-            background: #27ae60;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 4px;
-            text-decoration: none;
-        }
-    </style>
+    <title>Урок 5. Тестирование браузерных пушей</title>
 </head>
 <body>
-    <header>
-        <h1>Книжный магазин</h1>
-        <div>Товаров в корзине: <span id="cart-counter">0</span></div>
-    </header>
 
-    <main>
-        <div class="book-card">
-            <h3>Война и мир</h3>
-            <a href="#" class="add-to-cart" onclick="addToCart(event, 'Война и мир')">В корзину</a>
-        </div>
-        
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="#" id="init_sub" class="add-to-cart">Подписаться на уведомления</a>
-        </div>
-    </main>
+    <!-- Разместите скрипт для пуш-уведомлений здесь -->
 
-    <script>
-        // Функция для безопасной отправки данных
-        function pushToLayer(data) {
-            try {
-                // Очистка данных от спецсимволов
-                const cleanData = {};
-                for (const key in data) {
-                    cleanData[key] = String(data[key]).replace(/[^\w\sа-яА-Я.,!?-]/g, '');
-                }
-                window.acDataLayer.push(cleanData);
-            } catch(e) {
-                console.error('Ошибка отправки:', e);
-            }
-        }
+    <p>Урок 5. Тестирование браузерных пушей</p>
 
-        // Добавление в корзину
-        function addToCart(event, title) {
-            event.preventDefault();
-            document.getElementById('cart-counter').textContent = 
-                parseInt(document.getElementById('cart-counter').textContent) + 1;
-            
-            pushToLayer({
-                event: 'add_to_cart',
-                product: title,
-                time: new Date().toISOString()
-            });
-        }
-
-        // Инициализация подписки
-        document.getElementById('init_sub').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (window.AKPush) {
-                try {
-                    new AKPush().initSubscription();
-                } catch(err) {
-                    console.error('Ошибка подписки:', err);
-                }
-            }
-        });
-    </script>
 </body>
 </html>
