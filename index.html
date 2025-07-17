@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Книжный магазин</title>
-    <!-- Altcraft скрипт -->
     <script>
         (function (window, document, dataLayerName, containerID) {
             window[dataLayerName] = window[dataLayerName] || [];
@@ -25,7 +24,6 @@
         }(window, document, 'acDataLayer', 'ATM-9MaUAoC2Hv4TCDTbl'));
     </script>
     <style>
-        /* Стили остаются без изменений */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -37,7 +35,6 @@
 <body>
     <script src="https://pxl.demo.altcraft.com/ak_container.js?id=MTg1fDM="></script>
 
-    <!-- Остальная часть HTML -->
     <header>
         <h1>Книжный магазин</h1>
         <div>Товаров в корзине: <span id="cart-counter">0</span></div>
@@ -58,7 +55,7 @@
     </main>
 
     <script>
-        // Функция добавления в корзину с улучшенной обработкой JSON
+        // Функция добавления в корзину
         function addToCart(event, bookTitle) {
             event.preventDefault();
             
@@ -66,11 +63,11 @@
             const counter = document.getElementById('cart-counter');
             counter.textContent = parseInt(counter.textContent) + 1;
             
-            // Отправляем событие в Altcraft с правильным JSON
+            // Отправляем событие в Altcraft
             if(window.acDataLayer) {
                 const eventData = {
                     event: 'add_to_cart',
-                    book_title: bookTitle.replace(/[^\w\s]/gi, ''), // Удаляем спецсимволы
+                    book_title: bookTitle.replace(/[^\w\s]/gi, ''),
                     eventType: 'click',
                     eventCategory: 'cart',
                     eventAction: 'add',
@@ -79,22 +76,24 @@
                 
                 try {
                     window.acDataLayer.push(eventData);
+                    // Триггерим push-уведомление через Altcraft
+                    triggerPushNotification(bookTitle);
                 } catch(e) {
                     console.error('Ошибка отправки данных:', e);
                 }
             }
-            
-            // Показываем push-уведомление
-            try {
-                if(typeof AKPush !== 'undefined') {
-                    AKPush.showNotification({
-                        title: 'Товар добавлен',
-                        body: 'Вы добавили ' + bookTitle,
-                        icon: 'https://example.com/icon.png'
-                    });
-                }
-            } catch(e) {
-                console.error('Ошибка уведомления:', e);
+        }
+
+        // Функция для триггера push-уведомления
+        function triggerPushNotification(bookTitle) {
+            if (window.acDataLayer) {
+                window.acDataLayer.push({
+                    event: 'trigger_push',
+                    push_title: 'Товар добавлен в корзину',
+                    push_message: `Вы добавили "${bookTitle}"`,
+                    push_icon: 'https://example.com/icon.png',
+                    push_url: window.location.href
+                });
             }
         }
 
@@ -102,10 +101,18 @@
         document.getElementById('init_sub').addEventListener('click', function(event) {
             event.preventDefault();
             try {
-                var akPush = new AKPush();
-                akPush.initSubscription();
+                if (typeof AKPush !== 'undefined') {
+                    var akPush = new AKPush();
+                    akPush.initSubscription().then(function() {
+                        console.log('Подписка успешно оформлена');
+                    }).catch(function(error) {
+                        console.error('Ошибка подписки:', error);
+                    });
+                } else {
+                    console.warn('AKPush не доступен');
+                }
             } catch(e) {
-                console.error('Ошибка подписки:', e);
+                console.error('Ошибка:', e);
             }
         });
     </script>
