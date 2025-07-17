@@ -4,42 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Урок 5. Тестирование браузерных пушей</title>
-</head>
-	<script>
-    (function (window, document, dataLayerName, containerID) {
-        window[dataLayerName] = window[dataLayerName] || [];
-        window[dataLayerName].push({ 'start': new Date().getTime(), event: 'actm-js' });
-        var firstScript = document.getElementsByTagName('script')[0];
-        var script = document.createElement('script');
-        var dl = dataLayerName !== 'acDataLayer' ? '&l=' + dataLayerName : '';
-        script.async = true;
-        script.src = 'https://pxl.demo.altcraft.com/actm/js/actm.js?id=' + containerID + dl;
-        script.type = 'module';
-        if (firstScript && firstScript.parentNode) {
-            firstScript.parentNode.insertBefore(script, firstScript);
-        }
-    }(window, document, 'acDataLayer', 'ATM-9RyRukqravy7Jjtz_'));
-</script>
-<body>
-<script src="https://pxl.demo.altcraft.com/ak_container.js?id=MTg1fDM=" ></script>
-<button id="init_sub">Подписаться на уведомления</button> 
-
-<script>
-	document.getElementById('init_sub').addEventListener('click', function() { // По клику на кнопку..
-	try {
-		var akPush = new AKPush();
-		akPush.initSubscription() // Покажет форму для подписки
-		}
-	catch (e) {
-		console.log(e); // В случае ошибки выведет сообщение в консоль
-		}
-	});
-</script>
-    <!-- Разместите скрипт для пуш-уведомлений здесь -->
-
-    <p>Урок 5. Тестирование браузерных пушей</p>
-	<meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -87,7 +51,7 @@
 
         .featured-books {
             padding: 2rem;
-            margin-bottom: 60px; /* Чтобы футер не перекрывал контент */
+            margin-bottom: 60px;
         }
 
         .book-grid {
@@ -177,9 +141,7 @@
                     <h3>Война и мир</h3>
                     <p>Автор: Лев Толстой</p>
                     <p>Цена: 450 руб.</p>
-                    <button class="add-to-cart" onclick="alert('Война и мир добавлена в корзину!'); 
-                        document.getElementById('cart-counter').textContent = 
-                        parseInt(document.getElementById('cart-counter').textContent) + 1;">
+                    <button class="add-to-cart" onclick="addToCart()">
                         В корзину
                     </button>
                 </div>
@@ -190,9 +152,7 @@
                     <h3>Преступление и наказание</h3>
                     <p>Автор: Фёдор Достоевский</p>
                     <p>Цена: 380 руб.</p>
-                    <button class="add-to-cart" onclick="alert('Преступление и наказание добавлено в корзину!'); 
-                        document.getElementById('cart-counter').textContent = 
-                        parseInt(document.getElementById('cart-counter').textContent) + 1;">
+                    <button class="add-to-cart" onclick="addToCart()">
                         В корзину
                     </button>
                 </div>
@@ -203,9 +163,7 @@
                     <h3>Мастер и Маргарита</h3>
                     <p>Автор: Михаил Булгаков</p>
                     <p>Цена: 420 руб.</p>
-                    <button class="add-to-cart" onclick="alert('Мастер и Маргарита добавлена в корзину!'); 
-                        document.getElementById('cart-counter').textContent = 
-                        parseInt(document.getElementById('cart-counter').textContent) + 1;">
+                    <button class="add-to-cart" onclick="addToCart()">
                         В корзину
                     </button>
                 </div>
@@ -216,9 +174,7 @@
                     <h3>1984</h3>
                     <p>Автор: Джордж Оруэлл</p>
                     <p>Цена: 350 руб.</p>
-                    <button class="add-to-cart" onclick="alert('1984 добавлена в корзину!'); 
-                        document.getElementById('cart-counter').textContent = 
-                        parseInt(document.getElementById('cart-counter').textContent) + 1;">
+                    <button class="add-to-cart" onclick="addToCart()">
                         В корзину
                     </button>
                 </div>
@@ -227,7 +183,14 @@
     </main>
 
     <footer>
-        <p>&copy; 2023 Книжный Уголок. Все права защищены.</p>
     </footer>
+
+    <script>
+        function addToCart() {
+            // Просто увеличиваем счетчик корзины
+            const counter = document.getElementById('cart-counter');
+            counter.textContent = parseInt(counter.textContent) + 1;
+        }
+    </script>
 </body>
 </html>
